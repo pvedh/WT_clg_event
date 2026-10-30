@@ -1,0 +1,27 @@
+
+### Get all students
+GET http://localhost:3000/students
+
+### Get one student
+GET http://localhost:3000/students/1
+
+### Add student
+POST http://localhost:3000/students
+Content-Type: application/json
+
+{
+  "name": "Vedh",
+  "rollNo": "23071A05B1",
+  "course": "CSE"
+}
+
+### Update student
+PATCH http://localhost:3000/students/1
+Content-Type: application/json
+
+{
+  "course": "Computer Engineering"
+}
+
+### Delete student
+DELETE http://localhost:3000/students/2
