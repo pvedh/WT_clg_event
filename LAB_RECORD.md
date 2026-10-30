@@ -25,3 +25,5 @@ Developed a Student Management API to add, retrieve, update and delete student r
 
 ## Result
 The Student Management Backend was successfully developed using Node.js and Express.js. All CRUD operations were implemented and tested successfully using Postman.
+
+Git Branching: Practised feature branch creation and switching.
