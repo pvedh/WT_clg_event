@@ -1,14 +1,19 @@
+
 name: CRUD Backend CI
 
 on:
   push:
-    branches: [main]
+    branches: [devops-crud]
   pull_request:
-    branches: [main]
+    branches: [devops-crud]
+
+permissions:
+  contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout source code
@@ -18,12 +23,34 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run API tests
         run: |
-          node server.js &
-          sleep 5
+          node server.js > server.log 2>&1 &
+          SERVER_PID=$!
+
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          for i in $(seq 1 20); do
+            if curl -sS -o /dev/null http://127.0.0.1:3000/; then
+              break
+            fi
+
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              cat server.log
+              exit 1
+            fi
+
+            sleep 1
+          done
+
+          if ! curl -sS -o /dev/null http://127.0.0.1:3000/; then
+            cat server.log
+            exit 1
+          fi
+
           node test_cases.js
