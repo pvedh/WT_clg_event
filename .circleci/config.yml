@@ -9,10 +9,15 @@ jobs:
     steps:
       - checkout
       - run: npm install
-      - run: npm test
+
+      - run:
+          name: Start server and test
+          command: |
+            npm start > server.log 2>&1 &
+            sleep 5
+            npm test
 
 workflows:
   build:
     jobs:
       - test
-
