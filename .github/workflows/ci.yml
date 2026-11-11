@@ -28,15 +28,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run API tests
+      - name: Start API server
         run: |
-          node server.js > server.log 2>&1 &
+          npm start > server.log 2>&1 &
           SERVER_PID=$!
 
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
 
           for i in $(seq 1 20); do
-            if curl -sS -o /dev/null http://127.0.0.1:3000/; then
+            if curl --fail --silent --show-error http://127.0.0.1:3000/students > /dev/null; then
               break
             fi
 
@@ -48,9 +48,9 @@ jobs:
             sleep 1
           done
 
-          if ! curl -sS -o /dev/null http://127.0.0.1:3000/; then
+          if ! curl --fail --silent --show-error http://127.0.0.1:3000/students > /dev/null; then
             cat server.log
             exit 1
           fi
 
-          node test_cases.js
+          npm test
